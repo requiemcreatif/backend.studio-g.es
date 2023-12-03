@@ -1,7 +1,37 @@
-/*
+# /*
 
 !.gitignore
 
 
-!wp-content/themes/studio-g
-!wp-content/plugins
+# !wp-content/themes/*
+# !wp-content/plugins
+# !plugins/*
+
+.env
+
+app/public/wp-admin/*
+app/public/wp-includes/*
+wp-content/advanced-cache.php
+app/public/wp-content/plugins/advanced-custom-fields/assets/*
+app/public/wp-content/plugins/advanced-custom-fields/*
+wp-content/backup-db/
+app/public/wp-content/upgrade/
+app/public/wp-content/uploads/
+
+app/public/wp-content/themes/*
+!app/public/wp-content/themes/studio-g
+app/public/wp-content/themes/studio-g/patterns/
+app/sql/*
+
+
+conf/*
+logs/*
+
+app/public/xmlrpc.php
+app/public/wp-trackback.php
+app/public/wp-config-sample.php
+app/public/wp-cron.php
+app/public/.htaccess
+app/public/local-xdebuginfo.php
+
+app/public/wp-content/themes/studio-g/assets/*
