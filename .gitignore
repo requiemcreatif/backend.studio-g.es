@@ -38,3 +38,5 @@ app/public/local-xdebuginfo.php
 app/public/wp-content/themes/studio-g/assets/*
 
 .DS_Store
+app/public/wp-content/plugins/wordpress-seo/*
+app/public/wp-content/plugins/redirection/*

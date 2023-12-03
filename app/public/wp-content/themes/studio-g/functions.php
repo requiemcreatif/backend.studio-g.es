@@ -11,196 +11,250 @@
 /**
  * Register block styles.
  */
+define('ALL_POST_TYPES', array(
+    'page',
+    'post',
+));
 
-if ( ! function_exists( 'twentytwentyfour_block_styles' ) ) :
-	/**
-	 * Register custom block styles
-	 *
-	 * @since Twenty Twenty-Four 1.0
-	 * @return void
-	 */
-	function twentytwentyfour_block_styles() {
+// Helper functions
+require_once 'helpers/service.php';
+require_once 'helpers/contents.php';
+require_once 'helpers/blocks.php';
 
-		register_block_style(
-			'core/details',
-			array(
-				'name'         => 'arrow-icon-details',
-				'label'        => __( 'Arrow icon', 'twentytwentyfour' ),
-				/*
-				 * Styles for the custom Arrow icon style of the Details block
-				 */
-				'inline_style' => '
-				.is-style-arrow-icon-details {
-					padding-top: var(--wp--preset--spacing--10);
-					padding-bottom: var(--wp--preset--spacing--10);
-				}
+// Custom Post Types
+require_once __DIR__ . '/inc/cpt.php';
 
-				.is-style-arrow-icon-details summary {
-					list-style-type: "\2193\00a0\00a0\00a0";
-				}
+// Add ACF json functions
+require_once __DIR__ . '/inc/acf.php';
 
-				.is-style-arrow-icon-details[open]>summary {
-					list-style-type: "\2192\00a0\00a0\00a0";
-				}',
-			)
-		);
-		register_block_style(
-			'core/post-terms',
-			array(
-				'name'         => 'pill',
-				'label'        => __( 'Pill', 'twentytwentyfour' ),
-				/*
-				 * Styles variation for post terms
-				 * https://github.com/WordPress/gutenberg/issues/24956
-				 */
-				'inline_style' => '
-				.is-style-pill a,
-				.is-style-pill span:not([class], [data-rich-text-placeholder]) {
-					display: inline-block;
-					background-color: var(--wp--preset--color--base-2);
-					padding: 0.375rem 0.875rem;
-					border-radius: var(--wp--preset--spacing--20);
-				}
+// REST api.
+require_once __DIR__ . '/inc/rest.php';
 
-				.is-style-pill a:hover {
-					background-color: var(--wp--preset--color--contrast-3);
-				}',
-			)
-		);
-		register_block_style(
-			'core/list',
-			array(
-				'name'         => 'checkmark-list',
-				'label'        => __( 'Checkmark', 'twentytwentyfour' ),
-				/*
-				 * Styles for the custom checkmark list block style
-				 * https://github.com/WordPress/gutenberg/issues/51480
-				 */
-				'inline_style' => '
-				ul.is-style-checkmark-list {
-					list-style-type: "\2713";
-				}
 
-				ul.is-style-checkmark-list li {
-					padding-inline-start: 1ch;
-				}',
-			)
-		);
-		register_block_style(
-			'core/navigation-link',
-			array(
-				'name'         => 'arrow-link',
-				'label'        => __( 'With arrow', 'twentytwentyfour' ),
-				/*
-				 * Styles for the custom arrow nav link block style
-				 */
-				'inline_style' => '
-				.is-style-arrow-link .wp-block-navigation-item__label:after {
-					content: "\2197";
-					padding-inline-start: 0.25rem;
-					vertical-align: middle;
-					text-decoration: none;
-					display: inline-block;
-				}',
-			)
-		);
-		register_block_style(
-			'core/heading',
-			array(
-				'name'         => 'asterisk',
-				'label'        => __( 'With asterisk', 'twentytwentyfour' ),
-				'inline_style' => "
-				.is-style-asterisk:before {
-					content: '';
-					width: 1.5rem;
-					height: 3rem;
-					background: var(--wp--preset--color--contrast-2, currentColor);
-					clip-path: path('M11.93.684v8.039l5.633-5.633 1.216 1.23-5.66 5.66h8.04v1.737H13.2l5.701 5.701-1.23 1.23-5.742-5.742V21h-1.737v-8.094l-5.77 5.77-1.23-1.217 5.743-5.742H.842V9.98h8.162l-5.701-5.7 1.23-1.231 5.66 5.66V.684h1.737Z');
-					display: block;
-				}
-
-				/* Hide the asterisk if the heading has no content, to avoid using empty headings to display the asterisk only, which is an A11Y issue */
-				.is-style-asterisk:empty:before {
-					content: none;
-				}
-
-				.is-style-asterisk:-moz-only-whitespace:before {
-					content: none;
-				}
-
-				.is-style-asterisk.has-text-align-center:before {
-					margin: 0 auto;
-				}
-
-				.is-style-asterisk.has-text-align-right:before {
-					margin-left: auto;
-				}
-
-				.rtl .is-style-asterisk.has-text-align-left:before {
-					margin-right: auto;
-				}",
-			)
-		);
-	}
-endif;
-
-add_action( 'init', 'twentytwentyfour_block_styles' );
 
 /**
- * Enqueue block stylesheets.
+ * Modifies the path where the Advanced Custom Fields (ACF) plugin saves its JSON files.
+ *
+ * @param $path
+ * @return string
  */
+function acf_json_save_point($path)
+{
+    // update path
+    $path = get_template_directory() . '/acf-json';
 
-if ( ! function_exists( 'twentytwentyfour_block_stylesheets' ) ) :
-	/**
-	 * Enqueue custom block stylesheets
-	 *
-	 * @since Twenty Twenty-Four 1.0
-	 * @return void
-	 */
-	function twentytwentyfour_block_stylesheets() {
-		/**
-		 * The wp_enqueue_block_style() function allows us to enqueue a stylesheet
-		 * for a specific block. These will only get loaded when the block is rendered
-		 * (both in the editor and on the front end), improving performance
-		 * and reducing the amount of data requested by visitors.
-		 *
-		 * See https://make.wordpress.org/core/2021/12/15/using-multiple-stylesheets-per-block/ for more info.
-		 */
-		wp_enqueue_block_style(
-			'core/button',
-			array(
-				'handle' => 'twentytwentyfour-button-style-outline',
-				'src'    => get_parent_theme_file_uri( 'assets/css/button-outline.css' ),
-				'ver'    => wp_get_theme( get_template() )->get( 'Version' ),
-				'path'   => get_parent_theme_file_path( 'assets/css/button-outline.css' ),
-			)
-		);
-	}
-endif;
+    // return
+    return $path;
+}
 
-add_action( 'init', 'twentytwentyfour_block_stylesheets' );
+add_filter('acf/settings/save_json', 'acf_json_save_point');
+
 
 /**
- * Register pattern categories.
+ * Modifies the paths where the Advanced Custom Fields (ACF) plugin looks for its JSON files.
+ *
+ * @param $paths
+ * @return mixed
  */
+function acf_json_load_point($paths)
+{
+    // remove original path (optional)
+    unset($paths[0]);
 
-if ( ! function_exists( 'twentytwentyfour_pattern_categories' ) ) :
-	/**
-	 * Register pattern categories
-	 *
-	 * @since Twenty Twenty-Four 1.0
-	 * @return void
-	 */
-	function twentytwentyfour_pattern_categories() {
+    // append path
+    $paths[] = get_template_directory() . '/acf-json';
 
-		register_block_pattern_category(
-			'page',
-			array(
-				'label'       => _x( 'Pages', 'Block pattern category' ),
-				'description' => __( 'A collection of full page layouts.' ),
-			)
-		);
-	}
-endif;
+    // return
+    return $paths;
+}
 
-add_action( 'init', 'twentytwentyfour_pattern_categories' );
+add_filter('acf/settings/load_json', 'acf_json_load_point');
+
+
+
+/**
+ * add_theme_caps function
+ * adds 'unfiltered_html' capability to administrator only
+ * admin can add script tags into content and shortcodes without getting stripped out
+ * required for advert banner shortcode, do not use this for non admin roles!
+ */
+function add_theme_caps()
+{
+    // gets the author role
+    $role = get_role('administrator');
+
+    // This only works, because it accesses the class instance.
+    // would allow the author to edit others' posts for current theme only
+    $role->add_cap('unfiltered_html');
+}
+
+add_action('admin_init', 'add_theme_caps');
+
+
+// general response function
+function general_response($post_id, $is_preview = false)
+{
+    global $post;
+    $post = get_post($post_id, OBJECT);
+    // get post general data
+    $ret_obj = HCMS_Contents::get_post_data($post_id, null, true);
+
+    $post_blocks = array();
+    $count = 0;
+    $post_content = get_post_field('post_content', $post_id);
+    if (has_blocks($post_content)) {
+        $blocks = parse_blocks($post_content);
+        foreach ($blocks as $block) {
+            $map = HCMS_Blocks::map_block($block);
+            if ($map) {
+                //merge blocks to optimize DOM
+                switch ($map->blockName) {
+                        // merge `html` block if previous block was an `html` block
+                    case "html": {
+                            if ($count > 0 && $post_blocks[$count - 1]->blockName === "html") {
+                                $post_blocks[$count - 1]->innerHTML .= HCMS_Service::filter_link($map->innerHTML);
+                                break;
+                            }
+                        }
+
+                    default: {
+                            $count++;
+                            array_push($post_blocks, $map);
+                            break;
+                        }
+                }
+            }
+        }
+    }
+
+    if ($count > 0) {
+        $ret_obj['post_blocks'] = $post_blocks;
+    } else {
+        $ret_obj['post_blocks'] = [
+            array(
+                'blockName' => 'html',
+                'innerHTML' => HCMS_Service::filter_link(get_post_field('post_content', $post_id))
+            )
+        ];
+    }
+
+    // $ret_obj['seo'] = HCMS_Contents::get_seo_data($post_id, $post_id == get_option('page_on_front') ? false : true);
+    // $ret_obj['og'] = HCMS_Contents::get_og_data($post_id);
+    // $ret_obj['breadcrumbs'] = HCMS_Contents::get_breadcrumbs_data($post_id);
+
+    // if ($post_id == get_option('page_on_front')) {
+    //     $ret_obj['latest_news'] = HCMS_Service::get_latest_posts_by_cpt('news', 1, ['image', 'image_mobile'])[0];
+    //     $ret_obj['latest_campaigns'] = HCMS_Contents::get_active_campaigns() ? HCMS_Contents::get_active_campaigns()[0] : null;
+    // }
+
+    // $post_type = $ret_obj['post_type'];
+    // if ($post_type === 'brand' || $post_type === 'campaigns' || $post_type === 'calendars' || $post_type === 'guides' || $post_type === 'news') {
+    //     $ret_obj['top_casinos'] = HCMS_Contents::get_top_casinos_from_hub();
+    // }
+
+    // switch ($post_type) {
+    //     case 'page':
+    //         if ($post_id != get_option('page_on_front')) {
+    //             $ret_obj['meta']['_wp_page_template'] = get_post_meta($post_id)['_wp_page_template'];
+    //         }
+    //         break;
+
+    //     case 'brand':
+    //         $brand_campaign = HCMS_Contents::get_brand_campaigns($post_id, true, 1)->posts[0];
+    //         $fields = ['expiry_date', 'category', 'image'];
+    //         $ret_obj['sidebar_campaign'] = $brand_campaign ? HCMS_Contents::get_post_data($brand_campaign->ID, $fields) : null;
+    //         break;
+
+    //     case 'campaigns':
+    //         $active_campaigns = HCMS_Contents::get_active_campaigns(true);
+    //         $ret_obj['active_campaign'] = $active_campaigns && ($post_id !== $active_campaigns[0]['ID'])
+    //             ? $active_campaigns[0]
+    //             : $active_campaigns[1];
+    //         break;
+
+    //     case 'guides':
+    //         $latest_guides = HCMS_Service::get_latest_posts_by_cpt('guides');
+    //         $ret_obj['latest_guides'] = $latest_guides && ($post_id !== $latest_guides[0]['ID'])
+    //             ? $latest_guides[0]
+    //             : $latest_guides[1];
+    //         break;
+
+    //     case 'news':
+    //         $latest_news = HCMS_Service::get_latest_posts_by_cpt('news');
+    //         $ret_obj['latest_news'] = $latest_news && ($post_id !== $latest_news[0]['ID'])
+    //             ? $latest_news[0]
+    //             : $latest_news[1];
+    //         break;
+
+    //     case 'slots':
+    //         $ret_obj['game_provider'] = $ret_obj['game_provider']->post_title;
+    //         break;
+
+    //     case 'archive':
+    //         $page_num = (get_query_var('paged')) ? get_query_var('paged') : 1;
+    //         switch ($ret_obj['archive_type']) {
+    //             case 'calendars':
+    //                 $ret_obj['archive_items'] = HCMS_Service::get_all_archive_items('calendars', 6, [], true, $page_num);
+    //                 break;
+
+    //             case 'guides':
+    //                 $ret_obj['archive_items'] = HCMS_Service::get_all_archive_items('guides', 6, ['image'], true, $page_num);
+    //                 break;
+
+    //             case 'news':
+    //                 $ret_obj['archive_items'] = HCMS_Service::get_all_archive_items('news', 12, ['image'], true, $page_num);
+    //                 break;
+
+    //             case 'campaigns':
+    //                 $ret_obj['archive_items'] = HCMS_Service::get_all_archive_items('campaigns', 12, ['image'], true, $page_num);
+    //                 break;
+
+    //             case 'brand':
+    //                 $ret_obj['archive_items'] = HCMS_Service::get_all_archive_items('brand', 12, ['banner'], true, $page_num);
+    //                 break;
+
+    //             case 'slots':
+    //                 $ret_obj['archive_items'] = HCMS_Service::get_all_archive_items('slots', 8, ['image', 'rating', 'game_provider'], false, $page_num);
+    //                 break;
+
+    //             case 'game_providers':
+    //                 $ret_obj['archive_items'] = HCMS_Service::get_all_archive_items('game_providers', 8, ['logo'], false, $page_num);
+    //                 break;
+
+    //             default:
+    //                 break;
+    //         }
+
+    //     default:
+    //         break;
+    // }
+
+    // $is_public_sitemap = get_page_template_slug() === 'template-html-sitemap.php';
+    // if ($is_public_sitemap) {
+    //     $ret_obj['post_type'] = 'public_sitemap';
+    //     $sitemap = [];
+    //     $post_types = ['brand', 'game_providers', 'page'];
+    //     foreach ($post_types as $pt) {
+    //         $sitemap[$pt] = HCMS_Service::get_public_sitemap_data($pt);
+    //     }
+
+    //     $sitemap['categories'] = [];
+    //     $cat_post_types = ['calendars', 'guides', 'news', 'campaigns',];
+    //     foreach ($cat_post_types as $pt) {
+    //         $archive_id = get_field($pt . '_archive', 'option');
+    //         if ($archive_id) {
+    //             $xml_data_object['id'] = $archive_id;
+    //             $xml_data_object['title'] = html_entity_decode(get_the_title($archive_id));
+    //             $xml_data_object['url'] = HCMS_Service::filter_link(get_permalink($archive_id));
+    //             $sitemap['categories'][] = $xml_data_object;
+    //         }
+    //     }
+    //     $ret_obj['sitemap'] = $sitemap;
+    // }
+
+    // if ($is_preview) {
+    //     $ret_obj['seo']['noindex'] = true;
+    // }
+
+    return $ret_obj;
+}
