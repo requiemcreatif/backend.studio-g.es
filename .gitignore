@@ -21,6 +21,7 @@ app/public/wp-content/uploads/
 app/public/wp-content/themes/*
 !app/public/wp-content/themes/studio-g
 app/public/wp-content/themes/studio-g/patterns/
+!app/public/wp-content/themes/studio-g/helpers/*
 app/sql/*
 
 
@@ -35,3 +36,5 @@ app/public/.htaccess
 app/public/local-xdebuginfo.php
 
 app/public/wp-content/themes/studio-g/assets/*
+
+.DS_Store
